@@ -109,26 +109,39 @@ class MainWindow:
 
 
     def load_contracts(self):
-
+        from tkinter import messagebox  # Importação local por segurança
+        
+        # 1. Limpa a tabela atual
         for item in self.tree.get_children():
-
             self.tree.delete(item)
 
+        try:
+            # 2. Tenta buscar os contratos na API do PNCP
+            contracts = self.service.get_pending_contracts()
 
-        contracts = self.service.get_pending_contracts()
-
-
-        for contract in contracts:
-
-            self.tree.insert(
-                "",
-                tk.END,
-                values=(
-                    contract.numero,
-                    contract.prefixo_unidade,
-                    contract.objeto,
-                    contract.data_formatada,
-                ),
+            # 3. Se deu certo, preenche a tabela
+            for contract in contracts:
+                self.tree.insert(
+                    "",
+                    tk.END,
+                    values=(
+                        contract.numero,
+                        contract.prefixo_unidade,
+                        contract.objeto,
+                        contract.data_formatada,
+                    ),
+                )
+                
+        except Exception as error:
+            # 4. Se a API falhar, captura o erro sem fechar o programa
+            print(f"Erro ao carregar contratos: {error}")
+            
+            messagebox.showwarning(
+                "Aviso de Conexão", 
+                "Não foi possível atualizar a lista de contratos do PNCP.\n\n"
+                "O site do governo pode estar instável ou bloqueado no momento, "
+                "mas você ainda pode usar as outras funções do sistema.\n\n"
+                f"Detalhe do erro: {error}"
             )
 
 

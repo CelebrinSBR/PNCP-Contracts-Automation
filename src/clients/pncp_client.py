@@ -39,7 +39,7 @@ class PNCPClient:
     def _get_proxy_credentials(self) -> dict | None:
         """Lê o proxy do Windows e pede a senha ao usuário na tela."""
         
-        # Se as credenciais já foram digitadas, reaproveita
+        # Se as credenciais já foram digitadas nesta sessão, reaproveita
         if self.proxy_auth is not None:
             return self.proxy_auth
 
@@ -47,14 +47,14 @@ class PNCPClient:
         windows_proxies = urllib.request.getproxies()
         base_proxy = windows_proxies.get('http') or windows_proxies.get('https')
 
-        # Se a rede não tiver proxy, retorna None e segue a vida
+        # Se a rede não tiver proxy (ex: na sua casa), retorna None e segue a vida
         if not base_proxy:
             return None
 
-        # Janelas para solicitar credenciais
+        # Janelas para solicitar credenciais com os novos textos da FAB
         usuario = simpledialog.askstring(
             "Autenticação de Rede", 
-            "O Firewall da rede bloqueou o acesso.\n\nDigite seu USUÁRIO de rede:"
+            "O acesso ao PNCP requer liberação do Firewall.\n\nLOGIN DO PORTAL MILITAR :"
         )
         
         if not usuario:
@@ -62,7 +62,7 @@ class PNCPClient:
 
         senha = simpledialog.askstring(
             "Autenticação de Rede", 
-            "Digite sua SENHA de rede:", 
+            "SENHA DO PORTAL MILITAR :", 
             show='*'  
         )
 
@@ -116,7 +116,7 @@ class PNCPClient:
 
         params = self._build_params(page)
         
-        # Busca as credenciais de rede do chefe antes de disparar a requisição
+        # Busca as credenciais de rede antes de disparar a requisição
         credenciais = self._get_proxy_credentials()
 
         for attempt in range(3):
