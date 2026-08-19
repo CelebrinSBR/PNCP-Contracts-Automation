@@ -34,4 +34,4 @@ Thumbs.db
 
 # Arquivos temporários
 *.tmp
-*.temp
+*.tempdata/ 
